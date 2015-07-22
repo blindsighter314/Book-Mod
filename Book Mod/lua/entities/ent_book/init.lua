@@ -71,13 +71,11 @@ net.Receive("updateServer", function()
 	ent:SetNWString("Title", title)
 	local para = ""
 
-	for k,v in pairs(history) do
-		para = (para..v.."\n")
+	for i = 20,1,-1 do
+		para = (para..history[i].."\n")
 	end
 
 	ent:SetNWString("Text", para)
-	print(ent:GetNWString("Text"))
-	print("Niggers")
 end)
 
 

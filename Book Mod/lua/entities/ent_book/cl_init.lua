@@ -13,7 +13,7 @@ function ENT:Initialize()
 end
 
 function saveBookTitle(ent, title)
-	if string.len(title) > 20 then
+	if string.len(title) > Book_MaxTitleLength then
 		ent:Getowning_ent():ChatPrint("Error, your title was too long; must be less than 20 characters")
 	else
 		local author = ent:Getowning_ent()
@@ -26,6 +26,20 @@ function saveBookTitle(ent, title)
 			net.WriteString(title)
 			net.WriteTable(HistoryTable)
 		net.SendToServer()
+	end
+end
+
+function checkText(text, num)
+	if string.len(text) > Book_MaxTextPerLine then
+		LocalPlayer():ChatPrint("Line "..num.." of your book was too long and will be cut")
+		local t = string.Explode("", text)
+		local newString = ""
+		for i = 1, Book_MaxTextPerLine do
+			newString = (newString..t[i])
+		end
+		return newString
+	else
+		return text
 	end
 end
 
@@ -232,7 +246,7 @@ function openBookEdit(ent, title)
 
 
 
-	local spacer = 100
+	local spacer = 520
 	local indent = 22
 	local count = 1
 
@@ -242,11 +256,10 @@ function openBookEdit(ent, title)
 	text1:SetHistoryEnabled(true)
 	text1:SetText(HistoryTable[count] or "")
 	text1.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text1:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text2 = vgui.Create("DTextEntry", Base1)
@@ -255,11 +268,10 @@ function openBookEdit(ent, title)
 	text2:SetHistoryEnabled(true)
 	text2:SetText(HistoryTable[count] or "")
 	text2.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text1:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text3 = vgui.Create("DTextEntry", Base1)
@@ -268,11 +280,10 @@ function openBookEdit(ent, title)
 	text3:SetHistoryEnabled(true)
 	text3:SetText(HistoryTable[count] or "")
 	text3.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text2:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text4 = vgui.Create("DTextEntry", Base1)
@@ -281,11 +292,10 @@ function openBookEdit(ent, title)
 	text4:SetHistoryEnabled(true)
 	text4:SetText(HistoryTable[count] or "")
 	text4.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text3:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text5 = vgui.Create("DTextEntry", Base1)
@@ -294,11 +304,10 @@ function openBookEdit(ent, title)
 	text5:SetHistoryEnabled(true)
 	text5:SetText(HistoryTable[count] or "")
 	text5.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text4:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text6 = vgui.Create("DTextEntry", Base1)
@@ -307,11 +316,10 @@ function openBookEdit(ent, title)
 	text6:SetHistoryEnabled(true)
 	text6:SetText(HistoryTable[count] or "")
 	text6.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text5:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text7 = vgui.Create("DTextEntry", Base1)
@@ -320,11 +328,10 @@ function openBookEdit(ent, title)
 	text7:SetHistoryEnabled(true)
 	text7:SetText(HistoryTable[count] or "")
 	text7.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text6:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text8 = vgui.Create("DTextEntry", Base1)
@@ -333,11 +340,10 @@ function openBookEdit(ent, title)
 	text8:SetHistoryEnabled(true)
 	text8:SetText(HistoryTable[count] or "")
 	text8.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text7:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text9 = vgui.Create("DTextEntry", Base1)
@@ -346,11 +352,10 @@ function openBookEdit(ent, title)
 	text9:SetHistoryEnabled(true)
 	text9:SetText(HistoryTable[count] or "")
 	text9.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text8:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text10 = vgui.Create("DTextEntry", Base1)
@@ -359,11 +364,10 @@ function openBookEdit(ent, title)
 	text10:SetHistoryEnabled(true)
 	text10:SetText(HistoryTable[count] or "")
 	text10.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text9:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text11 = vgui.Create("DTextEntry", Base1)
@@ -372,11 +376,10 @@ function openBookEdit(ent, title)
 	text11:SetHistoryEnabled(true)
 	text11:SetText(HistoryTable[count] or "")
 	text11.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text10:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text12 = vgui.Create("DTextEntry", Base1)
@@ -385,11 +388,10 @@ function openBookEdit(ent, title)
 	text12:SetHistoryEnabled(true)
 	text12:SetText(HistoryTable[count] or "")
 	text12.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text11:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text13 = vgui.Create("DTextEntry", Base1)
@@ -398,11 +400,10 @@ function openBookEdit(ent, title)
 	text13:SetHistoryEnabled(true)
 	text13:SetText(HistoryTable[count] or "")
 	text13.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text12:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text14 = vgui.Create("DTextEntry", Base1)
@@ -411,11 +412,10 @@ function openBookEdit(ent, title)
 	text14:SetHistoryEnabled(true)
 	text14:SetText(HistoryTable[count] or "")
 	text14.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text13:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text15 = vgui.Create("DTextEntry", Base1)
@@ -424,11 +424,10 @@ function openBookEdit(ent, title)
 	text15:SetHistoryEnabled(true)
 	text15:SetText(HistoryTable[count] or "")
 	text15.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text14:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text16 = vgui.Create("DTextEntry", Base1)
@@ -437,11 +436,10 @@ function openBookEdit(ent, title)
 	text16:SetHistoryEnabled(true)
 	text16:SetText(HistoryTable[count] or "")
 	text16.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text15:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text17 = vgui.Create("DTextEntry", Base1)
@@ -450,11 +448,10 @@ function openBookEdit(ent, title)
 	text17:SetHistoryEnabled(true)
 	text17:SetText(HistoryTable[count] or "")
 	text17.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text16:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text18 = vgui.Create("DTextEntry", Base1)
@@ -463,11 +460,10 @@ function openBookEdit(ent, title)
 	text18:SetHistoryEnabled(true)
 	text18:SetText(HistoryTable[count] or "")
 	text18.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text17:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text19 = vgui.Create("DTextEntry", Base1)
@@ -476,11 +472,10 @@ function openBookEdit(ent, title)
 	text19:SetHistoryEnabled(true)
 	text19:SetText(HistoryTable[count] or "")
 	text19.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		text18:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 	count = count + 1
 
 	local text20 = vgui.Create("DTextEntry", Base1)
@@ -489,11 +484,11 @@ function openBookEdit(ent, title)
 	text20:SetHistoryEnabled(true)
 	text20:SetText(HistoryTable[count] or "")
 	text20.OnEnter = function(self)
-		HistoryTable[count] = self:GetText()
-		self:RequestFocus()
+		print(self:GetText())
+		text19:RequestFocus()
 	end
 
-	spacer = spacer + indent
+	spacer = spacer - indent
 
 
 
@@ -503,33 +498,33 @@ function openBookEdit(ent, title)
 
 
 
-
+	
 
 	local saveButton = vgui.Create("DButton", Base1)
-	saveButton:SetPos(5, spacer + 15)
+	saveButton:SetPos(5, spacer + 485)
 	saveButton:SetText("Save your book")
 	saveButton:SetSize(100, 20)
 	saveButton.DoClick = function()
-		HistoryTable[1] 	= text1:GetText()
-		HistoryTable[2] 	= text2:GetText()
-		HistoryTable[3] 	= text3:GetText()
-		HistoryTable[4] 	= text4:GetText()
-		HistoryTable[5] 	= text5:GetText()
-		HistoryTable[6] 	= text6:GetText()
-		HistoryTable[7] 	= text7:GetText()
-		HistoryTable[8] 	= text8:GetText()
-		HistoryTable[9] 	= text9:GetText()
-		HistoryTable[10] 	= text10:GetText()
-		HistoryTable[11] 	= text11:GetText()
-		HistoryTable[12] 	= text12:GetText()
-		HistoryTable[13] 	= text13:GetText()
-		HistoryTable[14] 	= text14:GetText()
-		HistoryTable[15] 	= text15:GetText()
-		HistoryTable[16] 	= text16:GetText()
-		HistoryTable[17] 	= text17:GetText()
-		HistoryTable[18] 	= text18:GetText()
-		HistoryTable[19] 	= text19:GetText()
-		HistoryTable[20] 	= text20:GetText()
+		HistoryTable[1] 	= checkText(text1:GetText(), 20)
+		HistoryTable[2] 	= checkText(text2:GetText(), 19)
+		HistoryTable[3] 	= checkText(text3:GetText(), 18)
+		HistoryTable[4] 	= checkText(text4:GetText(), 17)
+		HistoryTable[5] 	= checkText(text5:GetText(), 16)
+		HistoryTable[6] 	= checkText(text6:GetText(), 15)
+		HistoryTable[7] 	= checkText(text7:GetText(), 14)
+		HistoryTable[8] 	= checkText(text8:GetText(), 13)
+		HistoryTable[9] 	= checkText(text9:GetText(), 12)
+		HistoryTable[10] 	= checkText(text10:GetText(), 11)
+		HistoryTable[11] 	= checkText(text11:GetText(), 10)
+		HistoryTable[12] 	= checkText(text12:GetText(), 9)
+		HistoryTable[13] 	= checkText(text13:GetText(), 8)
+		HistoryTable[14] 	= checkText(text14:GetText(), 7)
+		HistoryTable[15] 	= checkText(text15:GetText(), 6)
+		HistoryTable[16] 	= checkText(text16:GetText(), 5)
+		HistoryTable[17] 	= checkText(text17:GetText(), 4)
+		HistoryTable[18] 	= checkText(text18:GetText(), 3)
+		HistoryTable[19] 	= checkText(text19:GetText(), 2)
+		HistoryTable[20] 	= checkText(text20:GetText(), 1)
 
 		net.Start("updateServer")
 			net.WriteEntity(ent)
@@ -537,13 +532,12 @@ function openBookEdit(ent, title)
 			net.WriteTable(HistoryTable)
 		net.SendToServer()
 		
-//		PrintTable(HistoryTable)
 		print(BOOKTITLE.." Saved!")
 		surface.PlaySound("items/ammo_pickup.wav")
 	end
 
 	local saveText = vgui.Create("DLabel", Base1)
-	saveText:SetPos(115, spacer + 18)
+	saveText:SetPos(115, spacer + 485)
 	saveText:SetColor(Color(0, 0, 0, 255))
 	saveText:SetText("Warning: Nothing will appear to happen, but if it makes a sound, it saved")
 	saveText:SizeToContents() 
