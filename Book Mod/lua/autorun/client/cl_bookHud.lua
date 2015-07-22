@@ -18,6 +18,7 @@ function book_HudPaint()
 			
 			draw.DrawText( title, "CloseCaption_Bold", ScrW() * 0.5, ScrH() * 0.55, Color(0, 102, 204, 255), TEXT_ALIGN_CENTER )
 			draw.DrawText( "Written By: "..author, "CloseCaption_Bold", ScrW() * 0.5, ScrH() * 0.55 + 20, Color(0, 102, 204, 255), TEXT_ALIGN_CENTER )
+			draw.DrawText( "Press E to read", "CloseCaption_Bold", ScrW() * 0.5, ScrH() * 0.55 + 40, Color(0, 102, 204, 255), TEXT_ALIGN_CENTER )
 		end
 	end
 end
