@@ -1,2 +1,2 @@
 # Book-Mod
-Addon for gmod, let's you make books! Created for DarkRP
+Addon for gmod, lets you make books! Created for DarkRP
