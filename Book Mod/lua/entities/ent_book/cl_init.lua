@@ -5,10 +5,9 @@ function ENT:Draw()
 end
 
 function ENT:Initialize()
-	HistoryTable = {""}
+	TextBoxContent = "" // THIS IS WHAT IS REPLACING HistoryTable
 	local author = self:Getowning_ent()
 	local author = (IsValid(author)) and author:Nick() or "Unknown"
-	//Timer because BOOKTITLE was being declared before the NWString was lol
 	timer.Simple( 0.5, function() BOOKTITLE = (self:GetNWString("Title")..", By "..author); clBookTitle = self:GetNWString("Title") end)
 end
 
@@ -24,17 +23,17 @@ function saveBookTitle(ent, title)
 		net.Start("updateServer")
 			net.WriteEntity(ent)
 			net.WriteString(title)
-			net.WriteTable(HistoryTable)
+			net.WriteString(TextBoxContent)
 		net.SendToServer()
 	end
 end
 
-function checkText(text, num)
-	if string.len(text) > Book_MaxTextPerLine then
-		LocalPlayer():ChatPrint("Line "..num.." of your book was too long and will be cut")
+function checkText(text)
+	if string.len(text) > Book_MaxText then
+		LocalPlayer():ChatPrint("Book text is more than the max ("..Book_MaxText..") and will be cut.")
 		local t = string.Explode("", text)
 		local newString = ""
-		for i = 1, Book_MaxTextPerLine do
+		for i = 1, Book_MaxText do
 			newString = (newString..t[i])
 		end
 		return newString
@@ -97,7 +96,7 @@ function openBookEdit(ent, title)
 		
 	local Base1 = vgui.Create("DPanel", ScrollBar)
 	Base1:SetPos(0,0)
-	Base1:SetSize(MenuBase:GetWide() - 20, 600)
+	Base1:SetSize(MenuBase:GetWide() - 20, (ScrH()/2) - 50)
 	Base1:SizeToContents()
 	Base1.Paint = function()
 		draw.RoundedBox( 8, 0, 0, Base1:GetWide(), Base1:GetTall(), Color( 255, 255, 255, 255 ) )
@@ -141,21 +140,20 @@ function openBookEdit(ent, title)
 	titleText:SizeToContents()
 
 	local helpText1 = vgui.Create("DLabel", Base1)
-	helpText1:SetPos(5, 50)
+	helpText1:SetPos(310, 50)
 	helpText1:SetColor(Color(0, 0, 0, 255))
-	helpText1:SetText("Scroll down to the bottom to save your writing.|")
+	helpText1:SetText("These icons help customize your book")
 	helpText1:SizeToContents()
 
 	local helpText2 = vgui.Create("DLabel", Base1)
-	helpText2:SetPos(250, 50)
+	helpText2:SetPos(310, 60)
 	helpText2:SetColor(Color(0, 0, 0, 255))
-	helpText2:SetText("These icons help customize your book, hit the 'i' button for more.")
+	helpText2:SetText("Hit the 'i' button for more.")
 	helpText2:SizeToContents()
 
 
-
 	local freeze = vgui.Create("DImageButton", Base1)
-	freeze:SetPos(260, 65)
+	freeze:SetPos(310, 75)
 	freeze:SetImage("icon16/stop.png")
 	freeze:SizeToContents()
 	freeze.DoClick = function()
@@ -167,7 +165,7 @@ function openBookEdit(ent, title)
 	end
 
 	local unfreeze = vgui.Create("DImageButton", Base1)
-	unfreeze:SetPos(285, 65)
+	unfreeze:SetPos(335, 75)
 	unfreeze:SetImage("icon16/arrow_right.png")
 	unfreeze:SizeToContents()
 	unfreeze.DoClick = function()
@@ -179,7 +177,7 @@ function openBookEdit(ent, title)
 	end
 
 	local setcolor = vgui.Create("DImageButton", Base1)
-	setcolor:SetPos(310, 65)
+	setcolor:SetPos(360, 75)
 	setcolor:SetImage("icon16/color_wheel.png")
 	setcolor:SizeToContents()
 	setcolor.DoClick = function()
@@ -189,12 +187,12 @@ function openBookEdit(ent, title)
 		Frame:MakePopup()
 
 		local Mixer = vgui.Create( "DColorMixer", Frame )
-		Mixer:Dock(FILL)			--Make Mixer fill place of Frame
+		Mixer:Dock(FILL)
 		Mixer:SetLabel("Change Book Color")
-		Mixer:SetPalette(true) 		--Show/hide the palette			DEF:true
-		Mixer:SetAlphaBar(false) 		--Show/hide the alpha bar		DEF:true
-		Mixer:SetWangs(true)			--Show/hide the R G B A indicators 	DEF:true
-		Mixer:SetColor(Color(255, 255, 255))	--Set the default color
+		Mixer:SetPalette(true) 		
+		Mixer:SetAlphaBar(false) 
+		Mixer:SetWangs(true)			
+		Mixer:SetColor(Color(255, 255, 255))
 		Mixer.ValueChanged = function(ctrl, color)
 			net.Start("bookAction")
 				net.WriteEntity(ent)
@@ -206,7 +204,7 @@ function openBookEdit(ent, title)
 	end
 
 	local publish = vgui.Create("DImageButton", Base1)
-	publish:SetPos(335, 65)
+	publish:SetPos(380, 75)
 	publish:SetImage("icon16/book_add.png")
 	publish:SizeToContents()
 	publish.DoClick = function()
@@ -222,7 +220,7 @@ function openBookEdit(ent, title)
 	end
 
 	local info = vgui.Create("DImageButton", Base1)
-	info:SetPos(360, 65)
+	info:SetPos(405, 75)
 	info:SetImage("icon16/information.png")
 	info:SizeToContents()
 	info.DoClick = function()
@@ -233,303 +231,34 @@ function openBookEdit(ent, title)
 		net.SendToServer()
 	end
 
+	local text = vgui.Create("DTextEntry", Base1)
+	text:SetPos(5, 50)
+	text:SetSize(300, 240)
+	text:SetHistoryEnabled(true)
+	text:SetMultiline(true)
+	text:SetText(TextBoxContent)
 
-
-
-
-
-
-
-
-
-
-
-
-
-	local spacer = 520
-	local indent = 22
-	local count = 1
-
-	local text1 = vgui.Create("DTextEntry", Base1)
-	text1:SetPos(5, spacer)
-	text1:SetSize(MenuBase:GetWide() - 100, 20)
-	text1:SetHistoryEnabled(true)
-	text1:SetText(HistoryTable[count] or "")
-	text1.OnEnter = function(self)
-		text1:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text2 = vgui.Create("DTextEntry", Base1)
-	text2:SetPos(5, spacer)
-	text2:SetSize(MenuBase:GetWide() - 100, 20)
-	text2:SetHistoryEnabled(true)
-	text2:SetText(HistoryTable[count] or "")
-	text2.OnEnter = function(self)
-		text1:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text3 = vgui.Create("DTextEntry", Base1)
-	text3:SetPos(5, spacer)
-	text3:SetSize(MenuBase:GetWide() - 100, 20)
-	text3:SetHistoryEnabled(true)
-	text3:SetText(HistoryTable[count] or "")
-	text3.OnEnter = function(self)
-		text2:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text4 = vgui.Create("DTextEntry", Base1)
-	text4:SetPos(5, spacer)
-	text4:SetSize(MenuBase:GetWide() - 100, 20)
-	text4:SetHistoryEnabled(true)
-	text4:SetText(HistoryTable[count] or "")
-	text4.OnEnter = function(self)
-		text3:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text5 = vgui.Create("DTextEntry", Base1)
-	text5:SetPos(5, spacer)
-	text5:SetSize(MenuBase:GetWide() - 100, 20)
-	text5:SetHistoryEnabled(true)
-	text5:SetText(HistoryTable[count] or "")
-	text5.OnEnter = function(self)
-		text4:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text6 = vgui.Create("DTextEntry", Base1)
-	text6:SetPos(5, spacer)
-	text6:SetSize(MenuBase:GetWide() - 100, 20)
-	text6:SetHistoryEnabled(true)
-	text6:SetText(HistoryTable[count] or "")
-	text6.OnEnter = function(self)
-		text5:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text7 = vgui.Create("DTextEntry", Base1)
-	text7:SetPos(5, spacer)
-	text7:SetSize(MenuBase:GetWide() - 100, 20)
-	text7:SetHistoryEnabled(true)
-	text7:SetText(HistoryTable[count] or "")
-	text7.OnEnter = function(self)
-		text6:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text8 = vgui.Create("DTextEntry", Base1)
-	text8:SetPos(5, spacer)
-	text8:SetSize(MenuBase:GetWide() - 100, 20)
-	text8:SetHistoryEnabled(true)
-	text8:SetText(HistoryTable[count] or "")
-	text8.OnEnter = function(self)
-		text7:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text9 = vgui.Create("DTextEntry", Base1)
-	text9:SetPos(5, spacer)
-	text9:SetSize(MenuBase:GetWide() - 100, 20)
-	text9:SetHistoryEnabled(true)
-	text9:SetText(HistoryTable[count] or "")
-	text9.OnEnter = function(self)
-		text8:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text10 = vgui.Create("DTextEntry", Base1)
-	text10:SetPos(5, spacer)
-	text10:SetSize(MenuBase:GetWide() - 100, 20)
-	text10:SetHistoryEnabled(true)
-	text10:SetText(HistoryTable[count] or "")
-	text10.OnEnter = function(self)
-		text9:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text11 = vgui.Create("DTextEntry", Base1)
-	text11:SetPos(5, spacer)
-	text11:SetSize(MenuBase:GetWide() - 100, 20)
-	text11:SetHistoryEnabled(true)
-	text11:SetText(HistoryTable[count] or "")
-	text11.OnEnter = function(self)
-		text10:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text12 = vgui.Create("DTextEntry", Base1)
-	text12:SetPos(5, spacer)
-	text12:SetSize(MenuBase:GetWide() - 100, 20)
-	text12:SetHistoryEnabled(true)
-	text12:SetText(HistoryTable[count] or "")
-	text12.OnEnter = function(self)
-		text11:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text13 = vgui.Create("DTextEntry", Base1)
-	text13:SetPos(5, spacer)
-	text13:SetSize(MenuBase:GetWide() - 100, 20)
-	text13:SetHistoryEnabled(true)
-	text13:SetText(HistoryTable[count] or "")
-	text13.OnEnter = function(self)
-		text12:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text14 = vgui.Create("DTextEntry", Base1)
-	text14:SetPos(5, spacer)
-	text14:SetSize(MenuBase:GetWide() - 100, 20)
-	text14:SetHistoryEnabled(true)
-	text14:SetText(HistoryTable[count] or "")
-	text14.OnEnter = function(self)
-		text13:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text15 = vgui.Create("DTextEntry", Base1)
-	text15:SetPos(5, spacer)
-	text15:SetSize(MenuBase:GetWide() - 100, 20)
-	text15:SetHistoryEnabled(true)
-	text15:SetText(HistoryTable[count] or "")
-	text15.OnEnter = function(self)
-		text14:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text16 = vgui.Create("DTextEntry", Base1)
-	text16:SetPos(5, spacer)
-	text16:SetSize(MenuBase:GetWide() - 100, 20)
-	text16:SetHistoryEnabled(true)
-	text16:SetText(HistoryTable[count] or "")
-	text16.OnEnter = function(self)
-		text15:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text17 = vgui.Create("DTextEntry", Base1)
-	text17:SetPos(5, spacer)
-	text17:SetSize(MenuBase:GetWide() - 100, 20)
-	text17:SetHistoryEnabled(true)
-	text17:SetText(HistoryTable[count] or "")
-	text17.OnEnter = function(self)
-		text16:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text18 = vgui.Create("DTextEntry", Base1)
-	text18:SetPos(5, spacer)
-	text18:SetSize(MenuBase:GetWide() - 100, 20)
-	text18:SetHistoryEnabled(true)
-	text18:SetText(HistoryTable[count] or "")
-	text18.OnEnter = function(self)
-		text17:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text19 = vgui.Create("DTextEntry", Base1)
-	text19:SetPos(5, spacer)
-	text19:SetSize(MenuBase:GetWide() - 100, 20)
-	text19:SetHistoryEnabled(true)
-	text19:SetText(HistoryTable[count] or "")
-	text19.OnEnter = function(self)
-		text18:RequestFocus()
-	end
-
-	spacer = spacer - indent
-	count = count + 1
-
-	local text20 = vgui.Create("DTextEntry", Base1)
-	text20:SetPos(5, spacer)
-	text20:SetSize(MenuBase:GetWide() - 100, 20)
-	text20:SetHistoryEnabled(true)
-	text20:SetText(HistoryTable[count] or "")
-	text20.OnEnter = function(self)
-		print(self:GetText())
-		text19:RequestFocus()
-	end
-
-	spacer = spacer - indent
-
-
-
-
-
-
-
-
-
-	
-
-	local saveButton = vgui.Create("DButton", Base1)
-	saveButton:SetPos(5, spacer + 485)
-	saveButton:SetText("Save your book")
-	saveButton:SetSize(100, 20)
-	saveButton.DoClick = function()
-		HistoryTable[1] 	= checkText(text1:GetText(), 20)
-		HistoryTable[2] 	= checkText(text2:GetText(), 19)
-		HistoryTable[3] 	= checkText(text3:GetText(), 18)
-		HistoryTable[4] 	= checkText(text4:GetText(), 17)
-		HistoryTable[5] 	= checkText(text5:GetText(), 16)
-		HistoryTable[6] 	= checkText(text6:GetText(), 15)
-		HistoryTable[7] 	= checkText(text7:GetText(), 14)
-		HistoryTable[8] 	= checkText(text8:GetText(), 13)
-		HistoryTable[9] 	= checkText(text9:GetText(), 12)
-		HistoryTable[10] 	= checkText(text10:GetText(), 11)
-		HistoryTable[11] 	= checkText(text11:GetText(), 10)
-		HistoryTable[12] 	= checkText(text12:GetText(), 9)
-		HistoryTable[13] 	= checkText(text13:GetText(), 8)
-		HistoryTable[14] 	= checkText(text14:GetText(), 7)
-		HistoryTable[15] 	= checkText(text15:GetText(), 6)
-		HistoryTable[16] 	= checkText(text16:GetText(), 5)
-		HistoryTable[17] 	= checkText(text17:GetText(), 4)
-		HistoryTable[18] 	= checkText(text18:GetText(), 3)
-		HistoryTable[19] 	= checkText(text19:GetText(), 2)
-		HistoryTable[20] 	= checkText(text20:GetText(), 1)
+	MenuBase.OnClose = function()
+		TextBoxContent = checkText(text:GetText()) // Is check Text necessary?
 
 		net.Start("updateServer")
 			net.WriteEntity(ent)
 			net.WriteString(ent:GetNWString("Title"))
-			net.WriteTable(HistoryTable)
+			net.WriteString(TextBoxContent)
+		net.SendToServer()
+	end
+
+	local saveButton = vgui.Create("DButton", Base1)
+	saveButton:SetPos(5, 295)
+	saveButton:SetText("Save your book")
+	saveButton:SetSize(100, 20)
+	saveButton.DoClick = function()
+		TextBoxContent = checkText(text:GetText()) // Is check Text necessary?
+
+		net.Start("updateServer")
+			net.WriteEntity(ent)
+			net.WriteString(ent:GetNWString("Title"))
+			net.WriteString(TextBoxContent)
 		net.SendToServer()
 		
 		print(BOOKTITLE.." Saved!")
@@ -537,10 +266,10 @@ function openBookEdit(ent, title)
 	end
 
 	local saveText = vgui.Create("DLabel", Base1)
-	saveText:SetPos(115, spacer + 485)
+	saveText:SetPos(115, 298)
 	saveText:SetColor(Color(0, 0, 0, 255))
 	saveText:SetText("Warning: Nothing will appear to happen, but if it makes a sound, it saved")
-	saveText:SizeToContents() 
+	saveText:SizeToContents()
 end
 net.Receive("openBookEdit", function(len,ply)
 	ent = net.ReadEntity()
@@ -553,18 +282,15 @@ end)
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 function openBookROM(ent, title)
-	local author = ent:Getowning_ent()
-	local author = (IsValid(author)) and author:Nick() or "Unknown"
+	local origauthor = ent:Getowning_ent()
+	local author = (IsValid(origauthor)) and origauthor:Nick() or "Unknown"
 	if textOpen == true then return end
 	textOpen = true
 	local ply = LocalPlayer()
@@ -618,7 +344,7 @@ function openBookROM(ent, title)
 		
 	local Base1 = vgui.Create("DPanel", ScrollBar)
 	Base1:SetPos(0,0)
-	Base1:SetSize(MenuBase:GetWide() - 20, 300)
+	Base1:SetSize(MenuBase:GetWide() - 20, (ScrH()/2) - 50)
 	Base1:SizeToContents()
 	Base1.Paint = function()
 		draw.RoundedBox( 8, 0, 0, Base1:GetWide(), Base1:GetTall(), Color( 255, 255, 255, 255 ) )
@@ -628,7 +354,60 @@ function openBookROM(ent, title)
 	paragraph:SetPos(5, 5)
 	paragraph:SetColor(Color(0, 0, 0, 255))
 	paragraph:SetText(ent:GetNWString("Text"))
-	paragraph:SizeToContents() 
+	paragraph:SizeToContents()
+
+	if LocalPlayer() == origauthor then
+	local freeze = vgui.Create("DImageButton", Base1)
+	freeze:SetPos(10, Base1:GetTall() - 20)
+	freeze:SetImage("icon16/stop.png")
+	freeze:SizeToContents()
+	freeze.DoClick = function()
+		net.Start("bookAction")
+			net.WriteEntity(ent)
+			net.WriteEntity(LocalPlayer())
+			net.WriteString("Freeze")
+		net.SendToServer()
+	end
+
+	local unfreeze = vgui.Create("DImageButton", Base1)
+	unfreeze:SetPos(35, Base1:GetTall() - 20)
+	unfreeze:SetImage("icon16/arrow_right.png")
+	unfreeze:SizeToContents()
+	unfreeze.DoClick = function()
+		net.Start("bookAction")
+			net.WriteEntity(ent)
+			net.WriteEntity(LocalPlayer())
+			net.WriteString("Unfreeze")
+		net.SendToServer()
+	end
+
+	local setcolor = vgui.Create("DImageButton", Base1)
+	setcolor:SetPos(60, Base1:GetTall() - 20)
+	setcolor:SetImage("icon16/color_wheel.png")
+	setcolor:SizeToContents()
+	setcolor.DoClick = function()
+		local Frame = vgui.Create( "DFrame" )
+		Frame:SetSize( 300, 186 ) --good size for example
+		Frame:Center()
+		Frame:MakePopup()
+
+		local Mixer = vgui.Create( "DColorMixer", Frame )
+		Mixer:Dock(FILL)
+		Mixer:SetLabel("Change Book Color")
+		Mixer:SetPalette(true) 		
+		Mixer:SetAlphaBar(false) 
+		Mixer:SetWangs(true)			
+		Mixer:SetColor(Color(255, 255, 255))
+		Mixer.ValueChanged = function(ctrl, color)
+			net.Start("bookAction")
+				net.WriteEntity(ent)
+				net.WriteEntity(LocalPlayer())
+				net.WriteString("ChangeColor")
+				net.WriteColor(Color(color.r, color.g, color.b))
+			net.SendToServer()
+		end
+	end
+	end
 end
 net.Receive("openBookRead", function(len, ply)
 	ent = net.ReadEntity()

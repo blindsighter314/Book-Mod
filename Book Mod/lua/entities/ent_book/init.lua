@@ -66,16 +66,10 @@ end
 net.Receive("updateServer", function()
 	local ent = net.ReadEntity()
 	local title = net.ReadString()
-	local history = net.ReadTable()
+	local text = net.ReadString()
 
 	ent:SetNWString("Title", title)
-	local para = ""
-
-	for i = 20,1,-1 do
-		para = (para..history[i].."\n")
-	end
-
-	ent:SetNWString("Text", para)
+	ent:SetNWString("Text", text)
 end)
 
 
