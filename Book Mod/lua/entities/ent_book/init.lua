@@ -35,9 +35,10 @@ function ENT:Initialize()
 	self.Entity:GetPhysicsObject():SetMass(50)
 
 	self:SetNWString("Title", "Untitled")
-	self:SetNWString("Text", "")
 	self:SetNWBool("isOpen", false)
 	self:SetNWBool("Published", false)
+
+	self.text = ""
 end
 
 function ENT:AcceptInput(name, activator, caller)
@@ -47,7 +48,9 @@ function ENT:AcceptInput(name, activator, caller)
 				net.Start("openBookRead")
 					net.WriteEntity(self)
 					net.WriteString(self:GetNWString("Title"))
+					net.WriteString(self.text)
 				net.Send(caller)
+				print(string.len(self.text))
 			else
 				net.Start("openBookEdit")
 					net.WriteEntity(self)
@@ -58,6 +61,7 @@ function ENT:AcceptInput(name, activator, caller)
 			net.Start("openBookRead")
 				net.WriteEntity(self)
 				net.WriteString(self:GetNWString("Title"))
+				net.WriteString(self.text)
 			net.Send(caller)
 		end
 	end 
@@ -66,10 +70,10 @@ end
 net.Receive("updateServer", function()
 	local ent = net.ReadEntity()
 	local title = net.ReadString()
-	local text = net.ReadString()
+	local content = net.ReadString()
 
 	ent:SetNWString("Title", title)
-	ent:SetNWString("Text", text)
+	ent.text = content
 end)
 
 

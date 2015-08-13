@@ -254,6 +254,7 @@ function openBookEdit(ent, title)
 	saveButton:SetSize(100, 20)
 	saveButton.DoClick = function()
 		TextBoxContent = checkText(text:GetText()) // Is check Text necessary?
+		
 
 		net.Start("updateServer")
 			net.WriteEntity(ent)
@@ -288,7 +289,7 @@ end)
 
 
 
-function openBookROM(ent, title)
+function openBookROM(ent, title, text)
 	local origauthor = ent:Getowning_ent()
 	local author = (IsValid(origauthor)) and origauthor:Nick() or "Unknown"
 	if textOpen == true then return end
@@ -359,7 +360,7 @@ function openBookROM(ent, title)
 	paragraph:SetDrawBackground(false)
 	paragraph:SetDrawBorder(false)
 	paragraph:SetEditable(false)
-	paragraph:SetText(ent:GetNWString("Text"))
+	paragraph:SetText(text)
 //	paragraph:SizeToContents()
 
 	if LocalPlayer() == origauthor then
@@ -418,5 +419,6 @@ end
 net.Receive("openBookRead", function(len, ply)
 	ent = net.ReadEntity()
 	title = net.ReadString()
-	openBookROM(ent, title)
+	txt = net.ReadString()
+	openBookROM(ent, title, txt)
 end)
