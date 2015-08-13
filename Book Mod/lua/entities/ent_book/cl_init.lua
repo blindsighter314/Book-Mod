@@ -350,11 +350,17 @@ function openBookROM(ent, title)
 		draw.RoundedBox( 8, 0, 0, Base1:GetWide(), Base1:GetTall(), Color( 255, 255, 255, 255 ) )
 	end
 
-	local paragraph = vgui.Create("DLabel", Base1)
+	local paragraph = vgui.Create("DTextEntry", ScrollBar)
 	paragraph:SetPos(5, 5)
-	paragraph:SetColor(Color(0, 0, 0, 255))
+	paragraph:SetSize(Base1:GetWide() - 50, Base1:GetTall(-5))
+	paragraph:SetTextColor(Color(0, 0, 0, 255))
+	paragraph:SetWrap(true)
+	paragraph:SetMultiline(true)
+	paragraph:SetDrawBackground(false)
+	paragraph:SetDrawBorder(false)
+	paragraph:SetEditable(false)
 	paragraph:SetText(ent:GetNWString("Text"))
-	paragraph:SizeToContents()
+//	paragraph:SizeToContents()
 
 	if LocalPlayer() == origauthor then
 	local freeze = vgui.Create("DImageButton", Base1)

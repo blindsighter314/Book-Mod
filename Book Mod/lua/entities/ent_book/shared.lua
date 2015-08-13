@@ -1,11 +1,11 @@
-ENT.Type 						= "anim"
-ENT.Base 						= "base_entity"
+ENT.Type 				= "anim"
+ENT.Base 				= "base_entity"
 ENT.PrintName 			= "Book"
-ENT.Author 					= "Justin"
+ENT.Author 				= "Justin"
 ENT.Information 		= ""
 ENT.Spawnable 			= true
-ENT.AdminSpawnable 	= true
-ENT.Category 				= "Book Addon"
+ENT.AdminSpawnable 		= true
+ENT.Category 			= "Book Addon"
 
 isOpen = false
 
@@ -15,7 +15,7 @@ end
 
 // Config /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Book_MaxTitleLength = 20
-Book_MaxText				= 5000	// Max amount of text (in characters) per line.
+Book_MaxTitleLength 	= 20
+Book_MaxText			= 100000	// Max amount of text (in characters) per line.
 
 // Config /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
