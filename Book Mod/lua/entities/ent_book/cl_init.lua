@@ -5,7 +5,7 @@ function ENT:Draw()
 end
 
 function ENT:Initialize()
-	TextBoxContent = "" // THIS IS WHAT IS REPLACING HistoryTable
+	TextBoxContent = ""
 	local author = self:Getowning_ent()
 	local author = (IsValid(author)) and author:Nick() or "Unknown"
 	timer.Simple( 0.5, function() BOOKTITLE = (self:GetNWString("Title")..", By "..author); clBookTitle = self:GetNWString("Title") end)
@@ -182,7 +182,7 @@ function openBookEdit(ent, title)
 	setcolor:SizeToContents()
 	setcolor.DoClick = function()
 		local Frame = vgui.Create( "DFrame" )
-		Frame:SetSize( 300, 186 ) --good size for example
+		Frame:SetSize( 300, 186 )
 		Frame:Center()
 		Frame:MakePopup()
 
@@ -239,7 +239,7 @@ function openBookEdit(ent, title)
 	text:SetText(TextBoxContent)
 
 	MenuBase.OnClose = function()
-		TextBoxContent = checkText(text:GetText()) // Is check Text necessary?
+		TextBoxContent = checkText(text:GetText())
 
 		net.Start("updateServer")
 			net.WriteEntity(ent)
@@ -253,7 +253,7 @@ function openBookEdit(ent, title)
 	saveButton:SetText("Save your book")
 	saveButton:SetSize(100, 20)
 	saveButton.DoClick = function()
-		TextBoxContent = checkText(text:GetText()) // Is check Text necessary?
+		TextBoxContent = checkText(text:GetText())
 		
 
 		net.Start("updateServer")
@@ -361,7 +361,6 @@ function openBookROM(ent, title, text)
 	paragraph:SetDrawBorder(false)
 	paragraph:SetEditable(false)
 	paragraph:SetText(text)
-//	paragraph:SizeToContents()
 
 	if LocalPlayer() == origauthor then
 	local freeze = vgui.Create("DImageButton", Base1)
